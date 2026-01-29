@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banana Crypto Analytics</title>
+    <style>
+        :root {
+            --bg: #0b0e11;
+            --card: #1e2329;
+            --accent: #fcd535;
+            --border: #474d57;
+            --text: #eaecef;
+            --text-dim: #848e9c;
+            --green: #02c076;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .calc-box {
+            background: var(--card);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            border: 1px solid var(--border);
+        }
+
+        h2 { text-align: center; color: var(--accent); margin-top: 0; font-size: 1.4rem; letter-spacing: 1px; }
+
+        .input-wrapper { margin-bottom: 18px; }
+        
+        label { 
+            display: block; 
+            font-size: 11px; 
+            color: var(--text-dim); 
+            margin-bottom: 6px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .input-field {
+            display: flex;
+            align-items: center;
+            background: #2b3139;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding-right: 8px;
+        }
+
+        .input-field:focus-within { border-color: var(--accent); }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .u-btn {
+            background: #474d57;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+
+        .u-btn:hover { background: var(--accent); color: black; }
+
+        .results-container {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stat-item {
+            background: #2b3139;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .highlight-box { 
+            background: rgba(2, 192, 118, 0.1); 
+            border: 1px solid var(--green);
+            text-align: center;
+        }
+
+        .stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .stat-value { font-size: 1.2rem; font-weight: 700; color: white; }
+        .green-text { color: var(--green); font-size: 1.8rem; }
+
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+            -webkit-appearance: none; margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calc-box">
+    <h2>🍌 BANANA ANALYTICS</h2>
+
+    <div class="input-wrapper">
+        <label>Tokens Quantity</label>
+        <div class="input-field">
+            <input type="number" id="tokens" placeholder="0" oninput="calculate()">
+            <button class="u-btn" onclick="addUnit('tokens', 1000)">+K</button>
+        </div>
+    </div>
+
+    <div class="input-wrapper">
+        <label>Total Supply</label>
+        <div class="input-field">
+            <input type="number" id="supply" placeholder="0" oninput="calculate()">
+            <div style="display: flex;">
+                <button class="u-btn" onclick="addUnit('supply', 1000000)">M</button>
+                <button class="u-btn" onclick="addUnit('supply', 1000000000)">B</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-wrapper">
+        <label>Token Price ($)</label>
+        <div class="input-field">
+            <input type="number" id="price" placeholder="0.00" step="0.00001" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="results-container">
+        <div class="stat-item highlight-box">
+            <span class="stat-label" style="color: var(--green);">Your Airdrop Value</span>
+            <div class="stat-value green-text" id="airdropVal">$0.00</div>
+        </div>
+
+        <div class="stat-item">
+            <span class="stat-label">Market Cap / FDV</span>
+            <div class="stat-value" id="mcapVal">$0.00</div>
+        </div>
+
+        <div class="stat-item">
+            <span class="stat-label">Formatted Supply</span>
+            <div class="stat-value" id="supplyVal">0</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addUnit(id, multiplier) {
+        const input = document.getElementById(id);
+        let current = parseFloat(input.value) || 0;
+        input.value = current === 0 ? multiplier : current * multiplier;
+        calculate();
+    }
+
+    function formatCompact(num) {
+        if (num >= 1e9) return (num / 1e9).toFixed(2) + ' B';
+        if (num >= 1e6) return (num / 1e6).toFixed(2) + ' M';
+        if (num >= 1e3) return (num / 1e3).toFixed(2) + ' K';
+        return num.toLocaleString();
+    }
+
+    function calculate() {
+        const tokens = parseFloat(document.getElementById('tokens').value) || 0;
+        const supply = parseFloat(document.getElementById('supply').value) || 0;
+        const price = parseFloat(document.getElementById('price').value) || 0;
+
+        const airdropValue = tokens * price;
+        const mcap = supply * price;
+
+        document.getElementById('airdropVal').innerText = '$' + airdropValue.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('mcapVal').innerText = '$' + formatCompact(mcap);
+        document.getElementById('supplyVal').innerText = formatCompact(supply);
+    }
+</script>
+
+</body>
+</html>
