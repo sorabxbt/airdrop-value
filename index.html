@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banana Crypto Analytics</title>
+    <title>Banana Analytics Pro</title>
     <style>
         :root {
             --bg: #0b0e11;
@@ -126,12 +126,23 @@
     </div>
 
     <div class="input-wrapper">
-        <label>Total Supply</label>
+        <label>Circulating Supply</label>
         <div class="input-field">
-            <input type="number" id="supply" placeholder="0" oninput="calculate()">
+            <input type="number" id="circSupply" placeholder="Supply in circulation" oninput="calculate()">
             <div style="display: flex;">
-                <button class="u-btn" onclick="addUnit('supply', 1000000)">M</button>
-                <button class="u-btn" onclick="addUnit('supply', 1000000000)">B</button>
+                <button class="u-btn" onclick="addUnit('circSupply', 1000000)">M</button>
+                <button class="u-btn" onclick="addUnit('circSupply', 1000000000)">B</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-wrapper">
+        <label>Total Supply (Max)</label>
+        <div class="input-field">
+            <input type="number" id="totalSupply" placeholder="Total/Max supply" oninput="calculate()">
+            <div style="display: flex;">
+                <button class="u-btn" onclick="addUnit('totalSupply', 1000000)">M</button>
+                <button class="u-btn" onclick="addUnit('totalSupply', 1000000000)">B</button>
             </div>
         </div>
     </div>
@@ -150,13 +161,13 @@
         </div>
 
         <div class="stat-item">
-            <span class="stat-label">Market Cap / FDV</span>
+            <span class="stat-label">Market Cap</span>
             <div class="stat-value" id="mcapVal">$0.00</div>
         </div>
 
         <div class="stat-item">
-            <span class="stat-label">Formatted Supply</span>
-            <div class="stat-value" id="supplyVal">0</div>
+            <span class="stat-label">FDV (Fully Diluted)</span>
+            <div class="stat-value" id="fdvVal">$0.00</div>
         </div>
     </div>
 </div>
@@ -178,15 +189,17 @@
 
     function calculate() {
         const tokens = parseFloat(document.getElementById('tokens').value) || 0;
-        const supply = parseFloat(document.getElementById('supply').value) || 0;
+        const circSupply = parseFloat(document.getElementById('circSupply').value) || 0;
+        const totalSupply = parseFloat(document.getElementById('totalSupply').value) || 0;
         const price = parseFloat(document.getElementById('price').value) || 0;
 
         const airdropValue = tokens * price;
-        const mcap = supply * price;
+        const mcap = circSupply * price;
+        const fdv = totalSupply * price;
 
         document.getElementById('airdropVal').innerText = '$' + airdropValue.toLocaleString(undefined, {minimumFractionDigits: 2});
         document.getElementById('mcapVal').innerText = '$' + formatCompact(mcap);
-        document.getElementById('supplyVal').innerText = formatCompact(supply);
+        document.getElementById('fdvVal').innerText = '$' + formatCompact(fdv);
     }
 </script>
 
